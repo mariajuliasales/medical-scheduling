@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: auth-service
+
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    properties:
+      hibernate:
+        default_schema: public
+
+  flyway:
+    enabled: true
+
+  profiles:
+    active: local
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
+logging:
+  level:
+    root: INFO
+    com.mariajulia.auth_service: DEBUG
