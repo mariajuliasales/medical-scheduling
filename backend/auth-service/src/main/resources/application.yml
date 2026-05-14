@@ -1,3 +1,6 @@
+server:
+  port: ${SERVER_PORT:8080}
+
 spring:
   application:
     name: auth-service
@@ -23,8 +26,12 @@ spring:
   profiles:
     active: local
 
+security:
+  bcrypt:
+    strength: ${SECURITY_BCRYPT_STRENGTH}
+
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET
   expiration: ${JWT_EXPIRATION}
 
 logging:
