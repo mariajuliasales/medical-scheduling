@@ -28,6 +28,14 @@ public class AuthController {
                 .body(authService.registerPatient(request, callerRole));
     }
 
+    @PostMapping("/register/doctor")
+    public ResponseEntity<UserResponse> registerDoctor(
+            @RequestHeader(value = "X-User-Role", required = false) String callerRole,
+            @Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authService.registerDoctor(request, callerRole));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
         return ResponseEntity.ok(authService.login(request));
