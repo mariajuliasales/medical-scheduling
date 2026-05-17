@@ -1,6 +1,8 @@
 package com.mariajulia.auth_service.controller;
 
+import com.mariajulia.auth_service.dto.request.LoginRequest;
 import com.mariajulia.auth_service.dto.request.RegisterRequest;
+import com.mariajulia.auth_service.dto.response.LoginResponse;
 import com.mariajulia.auth_service.dto.response.UserResponse;
 import com.mariajulia.auth_service.service.AuthService;
 import jakarta.validation.Valid;
@@ -24,5 +26,10 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authService.registerPatient(request, callerRole));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
+        return ResponseEntity.ok(authService.login(request));
     }
 }

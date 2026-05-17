@@ -1,12 +1,15 @@
 package com.mariajulia.auth_service.service;
 
 import com.mariajulia.auth_service.config.JwtProperties;
+import com.mariajulia.auth_service.dto.request.LoginRequest;
 import com.mariajulia.auth_service.dto.request.RegisterRequest;
+import com.mariajulia.auth_service.dto.response.LoginResponse;
 import com.mariajulia.auth_service.dto.response.UserResponse;
 import com.mariajulia.auth_service.exception.EmailAlreadyExistsException;
 import com.mariajulia.auth_service.exception.InsufficientRoleException;
 import com.mariajulia.auth_service.enums.Role;
 import com.mariajulia.auth_service.entity.User;
+import com.mariajulia.auth_service.exception.InvalidCredentialsException;
 import com.mariajulia.auth_service.mapper.UserMapper;
 import com.mariajulia.auth_service.repository.UserRepository;
 import com.mariajulia.auth_service.security.JwtProvider;
@@ -42,6 +45,37 @@ public class AuthService {
     public UserResponse registerPatient(RegisterRequest request, String callerRole) {
         requireAnyRole(callerRole, Role.SECRETARY, Role.ADMIN);
         return registerUser(request, Role.PATIENT);
+    }
+
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByEmailIgnoreCase(request.email())
+                .orElseThrow(() -> {
+                    log.warn("Email ou senha incorretos.");
+                    return new InvalidCredentialsException();
+                });
+
+        if (!user.isActive()) {
+            log.warn("Usuário inativo.");
+            throw new InvalidCredentialsException();
+        }
+
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            log.warn("Email ou senha incorretos.");
+            throw new InvalidCredentialsException();
+        }
+
+        String token = jwtProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
+
+        log.info("Login bem sucedido.");
+
+        return LoginResponse.builder()
+                .token(token)
+                .userId(user.getId())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .type("Bearer")
+                .expiresIn(jwtProperties.getExpiration())
+                .build();
     }
 
     private UserResponse registerUser(RegisterRequest request, Role role) {
