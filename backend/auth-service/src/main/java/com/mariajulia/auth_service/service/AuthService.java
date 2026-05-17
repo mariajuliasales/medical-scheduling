@@ -44,17 +44,17 @@ public class AuthService {
 
     public UserResponse registerPatient(RegisterRequest request, String callerRole) {
         requireAnyRole(callerRole, Role.SECRETARY, Role.ADMIN);
-        return registerUser(request, Role.PATIENT);
+        return registerUser(request, Role.PATIENT, callerRole);
     }
 
     public UserResponse registerDoctor(RegisterRequest request, String callerRole) {
         requireAnyRole(callerRole, Role.ADMIN);
-        return registerUser(request, Role.DOCTOR);
+        return registerUser(request, Role.DOCTOR, callerRole);
     }
 
     public UserResponse registerSecretary(RegisterRequest request, String callerRole) {
         requireAnyRole(callerRole, Role.ADMIN);
-        return registerUser(request, Role.SECRETARY);
+        return registerUser(request, Role.SECRETARY, callerRole);
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -88,7 +88,7 @@ public class AuthService {
                 .build();
     }
 
-    private UserResponse registerUser(RegisterRequest request, Role role) {
+    private UserResponse registerUser(RegisterRequest request, Role role, String callerRole) {
         if (userRepository.existsByEmailIgnoreCase(request.email())) {
             throw new EmailAlreadyExistsException(request.email());
         }
@@ -97,7 +97,7 @@ public class AuthService {
 
         User user = userRepository.save(UserMapper.toUser(request, hashedPassword, role));
 
-        log.info("User registered: userId={}, role={}", user.getId(), role);
+        log.info("User registered: userId={}, role={}, callerRole={}", user.getId(), role, callerRole);
         return UserMapper.toUserResponse(user);
     }
 
