@@ -52,6 +52,11 @@ public class AuthService {
         return registerUser(request, Role.DOCTOR);
     }
 
+    public UserResponse registerSecretary(RegisterRequest request, String callerRole) {
+        requireAnyRole(callerRole, Role.ADMIN);
+        return registerUser(request, Role.SECRETARY);
+    }
+
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmailIgnoreCase(request.email())
                 .orElseThrow(() -> {

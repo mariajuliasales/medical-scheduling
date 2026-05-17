@@ -36,6 +36,14 @@ public class AuthController {
                 .body(authService.registerDoctor(request, callerRole));
     }
 
+    @PostMapping("/register/secretary")
+    public ResponseEntity<UserResponse> registerSecretary(
+            @RequestHeader(value = "X-User-Role", required = false) String callerRole,
+            @Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authService.registerSecretary(request, callerRole));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
         return ResponseEntity.ok(authService.login(request));
